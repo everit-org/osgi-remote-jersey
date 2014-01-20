@@ -73,6 +73,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
+            <Bundle-Activator>org.everit.osgi.remote.jersey.extender.Activator</Bundle-Activator>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Import-Package>
               javax.servlet;version="[2.4,4)",
