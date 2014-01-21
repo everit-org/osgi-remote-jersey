@@ -21,16 +21,33 @@ package org.everit.osgi.remote.jersey.extender;
  * MA 02110-1301  USA
  */
 
-public final class Constants {
+/**
+ * Constants of the extender.
+ */
+public final class JerseyExtenderConstants {
 
+    /**
+     * When a JAX-RS annotated class should be extended by Jersey, it should registered as an OSGi service that has a
+     * service property with the key defined by this constant and the value 'true'.
+     */
     public static final String SERVICE_PROP_JERSEY_COMPONENT = "org.everit.osgi.remote.jersey.component";
-    
-    public static final String SERVICE_PROP_JERSEY_EXTENDER = "org.everit.osgi.remote.jersey.extender";
 
+    /**
+     * The id of OSGi service that is annotated with JAX-RS and re-registered as a servlet by this extender.
+     */
     public static final String SERVICE_PROP_TARGET_SERVICE_ID = "target." + org.osgi.framework.Constants.SERVICE_ID;
 
+    /**
+     * The persistent id of OSGi service (if available) that is annotated with JAX-RS and re-registered as a servlet by
+     * this extender.
+     */
     public static final String SERVICE_PROP_TARGET_SERVICE_PID = "target." + org.osgi.framework.Constants.SERVICE_PID;
 
-    private Constants() {
+    /**
+     * All service properties with the specified prefix will be set for the Jersey servlet.
+     */
+    public static final String SERVICE_PROP_JERSEY_PROP_PREFIX = "org.everit.osgi.remote.jersey.prop.";
+
+    private JerseyExtenderConstants() {
     }
 }
