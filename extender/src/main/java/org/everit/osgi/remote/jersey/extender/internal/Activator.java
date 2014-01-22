@@ -25,8 +25,8 @@ import java.util.Hashtable;
 
 import javax.servlet.Servlet;
 
-import org.everit.osgi.remote.jersey.extender.JerseyExtenderConstants;
 import org.everit.osgi.remote.jersey.extender.JerseyExtender;
+import org.everit.osgi.remote.jersey.extender.JerseyExtenderConstants;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
@@ -40,19 +40,20 @@ import org.osgi.util.tracker.ServiceTracker;
 public class Activator implements BundleActivator {
 
     /**
-     * The service tracker that tracks every OSGi service based on the {@link JerseyExtenderConstants#SERVICE_PROP_JERSEY_COMPONENT}
-     * service property.
+     * The service tracker that tracks every OSGi service based on the
+     * {@link JerseyExtenderConstants#SERVICE_PROP_JERSEY_COMPONENT} service property.
      */
     private ServiceTracker<Object, ServiceRegistration<Servlet>> tracker;
 
     private ServiceRegistration<JerseyExtender> jerseyExtenderSR;
-    
+
     private ServiceRegistration<Servlet> webConsolePluginSR;
 
     @Override
     public void start(final BundleContext context) throws Exception {
         JerseyExtenderImpl jerseyExtender = new JerseyExtenderImpl(context);
-        Filter filter = FrameworkUtil.createFilter("(" + JerseyExtenderConstants.SERVICE_PROP_JERSEY_COMPONENT + "=true)");
+        Filter filter = FrameworkUtil.createFilter("(" + JerseyExtenderConstants.SERVICE_PROP_JERSEY_COMPONENT
+                + "=true)");
         tracker = new ServiceTracker<>(context, filter, jerseyExtender);
         tracker.open();
         jerseyExtenderSR = context.registerService(JerseyExtender.class, jerseyExtender,

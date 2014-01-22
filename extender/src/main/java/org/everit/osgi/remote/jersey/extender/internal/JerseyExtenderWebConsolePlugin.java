@@ -35,10 +35,46 @@ import org.everit.osgi.remote.jersey.extender.TrackedService;
 
 public class JerseyExtenderWebConsolePlugin extends HttpServlet {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private final JerseyExtender jerseyExtender;
 
-    public JerseyExtenderWebConsolePlugin(JerseyExtender jerseyExtender) {
+    public JerseyExtenderWebConsolePlugin(final JerseyExtender jerseyExtender) {
         this.jerseyExtender = jerseyExtender;
+    }
+
+    @Override
+    protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException
+    {
+        PrintWriter pw = resp.getWriter();
+
+        pw.println("<table class='content' width='100%' cellspacing='0' cellpadding='0'>");
+
+        pw.println("<tr>");
+        pw.println("<th class='content container' colspan='3'>Tracked JAX-RS Services</td>");
+        pw.println("</tr>");
+        pw.println("<tr>");
+        pw.println("<th class='content'>Tracked Service ID</td>");
+        pw.println("<th class='content'>Registered Servlet Service ID</td>");
+        pw.println("<th class='content'>Information (String representation of tracked service object)</td>");
+        pw.println("</tr>");
+
+        List<TrackedService> trackedServices = jerseyExtender.getTrackedServices();
+        for (TrackedService trackedService : trackedServices) {
+            Long trackedServiceId = trackedService.getTrackedServiceId();
+            Long servletServiceId = trackedService.getServletServiceId();
+            String info = trackedService.getInfo();
+            pw.println("<tr>");
+            pw.println("<td class='content'><a href='services/" + trackedServiceId + "'>" + trackedServiceId
+                    + "</a></td>");
+            pw.println("<td class='content'><a href='services/" + servletServiceId + "'>" + servletServiceId
+                    + "</a></td>");
+            pw.println("<td class='content'>" + info + "</td>");
+            pw.println("</tr>");
+        }
+        pw.println("</table>");
     }
 
     public String getLabel()
@@ -52,42 +88,13 @@ public class JerseyExtenderWebConsolePlugin extends HttpServlet {
     }
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
+    protected void service(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
+            IOException
     {
         // only handle GET requests, ensure no error message for other requests
         if ("GET".equals(req.getMethod()) || "HEAD".equals(req.getMethod()))
         {
             super.service(req, resp);
         }
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException
-    {
-        PrintWriter pw = resp.getWriter();
-
-        pw.println("<table class='content' width='100%' cellspacing='0' cellpadding='0'>");
-        
-        pw.println("<tr>");
-        pw.println("<th class='content container' colspan='3'>Tracked JAX-RS Services</td>");
-        pw.println("</tr>");
-        pw.println("<tr>");
-        pw.println("<th class='content'>Tracked Service ID</td>");
-        pw.println("<th class='content'>Registered Servlet Service ID</td>");
-        pw.println("<th class='content'>Information (String representation of tracked service object)</td>");
-        pw.println("</tr>");
-        
-        List<TrackedService> trackedServices = jerseyExtender.getTrackedServices();
-        for (TrackedService trackedService : trackedServices) {
-            Long trackedServiceId = trackedService.getTrackedServiceId();
-            Long servletServiceId = trackedService.getServletServiceId();
-            String info = trackedService.getInfo();
-            pw.println("<tr>");
-            pw.println("<td class='content'><a href='services/" + trackedServiceId + "'>" + trackedServiceId + "</a></td>");
-            pw.println("<td class='content'><a href='services/" + servletServiceId + "'>" + servletServiceId + "</a></td>");
-            pw.println("<td class='content'>" + info + "</td>");
-            pw.println("</tr>");
-        }
-        pw.println("</table>");
     }
 }

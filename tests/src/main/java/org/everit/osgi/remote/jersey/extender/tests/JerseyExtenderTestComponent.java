@@ -29,7 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
@@ -87,7 +86,7 @@ public class JerseyExtenderTestComponent {
         serviceProperties.put("alias", "/helloworld");
         serviceProperties.put(JerseyExtenderConstants.SERVICE_PROP_JERSEY_COMPONENT, "true");
 
-        helloWorldSR = bundleContext.registerService(Object.class, new TestJaxRSService(),
+        helloWorldSR = bundleContext.registerService(Object.class, new JaxRSTestService(),
                 serviceProperties);
 
         this.bundleContext = bundleContext;
@@ -129,6 +128,34 @@ public class JerseyExtenderTestComponent {
     }
 
     /**
+     * Testing the usage of {@link JerseyExtenderConstants#SERVICE_PROP_JACKSON_SUPPORT} service property.
+     */
+    @Test
+    public void testJacksonServiceProperty() {
+        Hashtable<String, Object> serviceProperties = new Hashtable<String, Object>();
+        serviceProperties.put("alias", "/helloworldTmp");
+        serviceProperties.put(JerseyExtenderConstants.SERVICE_PROP_JERSEY_COMPONENT, true);
+        serviceProperties.put(JerseyExtenderConstants.SERVICE_PROP_JACKSON_SUPPORT, true);
+
+        ServiceRegistration<JaxRSTestService> helloWorldTmpSR = bundleContext.registerService(JaxRSTestService.class,
+                new JaxRSTestService(),
+                serviceProperties);
+
+        try {
+            WebClient webClient = new WebClient();
+            webClient.setJavaScriptEnabled(false);
+            Page page = webClient.getPage("http://localhost:" + testPort
+                    + "/helloworldTmp/testService1/returnJSONFromDTO");
+            String contentAsString = page.getWebResponse().getContentAsString();
+            Assert.assertEquals("{\"name\":\"John\",\"age\":1}", contentAsString);
+        } catch (IOException e) {
+            throw new AssertionError("Unexpected error during test", e);
+        } finally {
+            helloWorldTmpSR.unregister();
+        }
+    }
+
+    /**
      * Calling a function that writes to the response output stream directly.
      */
     @Test
@@ -146,6 +173,33 @@ public class JerseyExtenderTestComponent {
     }
 
     /**
+     * Registering a component with the {@link JacksonFeature} to test the generation of JSON objects.
+     */
+    @Test
+    public void testJSONFromDTO() {
+        Hashtable<String, Object> serviceProperties = new Hashtable<String, Object>();
+        serviceProperties.put("alias", "/helloworldTmp");
+        serviceProperties.put(JerseyExtenderConstants.SERVICE_PROP_JERSEY_COMPONENT, "true");
+
+        ServiceRegistration<Collection> helloWorldTmpSR = bundleContext.registerService(Collection.class,
+                Arrays.asList(new Object[] { new JaxRSTestService(), JacksonFeature.class }),
+                serviceProperties);
+
+        try {
+            WebClient webClient = new WebClient();
+            webClient.setJavaScriptEnabled(false);
+            Page page = webClient.getPage("http://localhost:" + testPort
+                    + "/helloworldTmp/testService1/returnJSONFromDTO");
+            String contentAsString = page.getWebResponse().getContentAsString();
+            Assert.assertEquals("{\"name\":\"John\",\"age\":1}", contentAsString);
+        } catch (IOException e) {
+            throw new AssertionError("Unexpected error during test", e);
+        } finally {
+            helloWorldTmpSR.unregister();
+        }
+    }
+
+    /**
      * Testing the case when jersey configuration is changed by changing the registered JAX-RS component OSGi service
      * properties without unregistering and registering it. To do that, the WADL existence is checked of the REST
      * service.
@@ -157,7 +211,7 @@ public class JerseyExtenderTestComponent {
         serviceProperties.put(JerseyExtenderConstants.SERVICE_PROP_JERSEY_COMPONENT, "true");
 
         ServiceRegistration<Collection> helloWorldTmpSR = bundleContext.registerService(Collection.class,
-                Arrays.asList(new Object[] { new TestJaxRSService(), JacksonFeature.class }),
+                Arrays.asList(new Object[] { new JaxRSTestService(), JacksonFeature.class }),
                 serviceProperties);
 
         try {
@@ -177,33 +231,6 @@ public class JerseyExtenderTestComponent {
             } catch (FailingHttpStatusCodeException e) {
                 Assert.assertEquals(HttpStatus.NOT_FOUND_404, e.getStatusCode());
             }
-        } catch (IOException e) {
-            throw new AssertionError("Unexpected error during test", e);
-        } finally {
-            helloWorldTmpSR.unregister();
-        }
-    }
-
-    /**
-     * Registering a component with the {@link JacksonFeature} to test the generation of JSON objects.
-     */
-    @Test
-    public void testJSONFromDTO() {
-        Hashtable<String, Object> serviceProperties = new Hashtable<String, Object>();
-        serviceProperties.put("alias", "/helloworldTmp");
-        serviceProperties.put(JerseyExtenderConstants.SERVICE_PROP_JERSEY_COMPONENT, "true");
-
-        ServiceRegistration<Collection> helloWorldTmpSR = bundleContext.registerService(Collection.class,
-                Arrays.asList(new Object[] { new TestJaxRSService(), JacksonFeature.class }),
-                serviceProperties);
-
-        try {
-            WebClient webClient = new WebClient();
-            webClient.setJavaScriptEnabled(false);
-            Page page = webClient.getPage("http://localhost:" + testPort
-                    + "/helloworldTmp/testService1/returnJSONFromDTO");
-            String contentAsString = page.getWebResponse().getContentAsString();
-            Assert.assertEquals("{\"name\":\"John\",\"age\":1}", contentAsString);
         } catch (IOException e) {
             throw new AssertionError("Unexpected error during test", e);
         } finally {
@@ -239,7 +266,7 @@ public class JerseyExtenderTestComponent {
             Page page = webClient
                     .getPage("http://localhost:" + testPort + "/system/console/jerseyextender");
             String contentAsString = page.getWebResponse().getContentAsString();
-            int indexOfTestService = contentAsString.indexOf(TestJaxRSService.class.getName());
+            int indexOfTestService = contentAsString.indexOf(JaxRSTestService.class.getName());
             Assert.assertEquals(true, indexOfTestService > 0);
         } catch (IOException e) {
             throw new AssertionError("Unexpected error during test", e);

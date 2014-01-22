@@ -21,7 +21,6 @@ package org.everit.osgi.remote.jersey.extender;
  * MA 02110-1301  USA
  */
 
-import java.util.List;
 
 /**
  * Information about the services that are tracked.
@@ -58,19 +57,12 @@ public class TrackedService {
      * @param info
      *            Information about the tracked service.
      */
-    public TrackedService(Long embeddedServiceId, Long servletServiceId, boolean collection, String info) {
-        this.trackedServiceId = embeddedServiceId;
+    public TrackedService(final Long embeddedServiceId, final Long servletServiceId, final boolean collection,
+            final String info) {
+        trackedServiceId = embeddedServiceId;
         this.collection = collection;
         this.info = info;
         this.servletServiceId = servletServiceId;
-    }
-
-    public Long getTrackedServiceId() {
-        return trackedServiceId;
-    }
-
-    public boolean isCollection() {
-        return collection;
     }
 
     public String getInfo() {
@@ -79,5 +71,13 @@ public class TrackedService {
 
     public Long getServletServiceId() {
         return servletServiceId;
+    }
+
+    public Long getTrackedServiceId() {
+        return trackedServiceId;
+    }
+
+    public boolean isCollection() {
+        return collection;
     }
 }

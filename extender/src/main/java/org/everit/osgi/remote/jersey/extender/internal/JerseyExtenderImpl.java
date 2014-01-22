@@ -32,8 +32,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.Servlet;
 
-import org.everit.osgi.remote.jersey.extender.JerseyExtenderConstants;
 import org.everit.osgi.remote.jersey.extender.JerseyExtender;
+import org.everit.osgi.remote.jersey.extender.JerseyExtenderConstants;
 import org.everit.osgi.remote.jersey.extender.TrackedService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -109,22 +109,6 @@ public class JerseyExtenderImpl implements ServiceTrackerCustomizer<Object, Serv
     }
 
     @Override
-    public void modifiedService(final ServiceReference<Object> reference,
-            final ServiceRegistration<Servlet> serviceRegistration) {
-        JerseyServletServiceFactory jerseyServletServiceFactory = serviceFactoriesByReferences.get(reference);
-        jerseyServletServiceFactory.referesh();
-        Dictionary<String, Object> properties = JerseyExtenderImpl.createProperties(reference);
-        serviceRegistration.setProperties(properties);
-    }
-
-    @Override
-    public void removedService(final ServiceReference<Object> reference,
-            final ServiceRegistration<Servlet> serviceRegistration) {
-        serviceFactoriesByReferences.remove(reference);
-        serviceRegistration.unregister();
-    }
-
-    @Override
     public List<TrackedService> getTrackedServices() {
         Set<Entry<ServiceReference<Object>, JerseyServletServiceFactory>> entrySet = serviceFactoriesByReferences
                 .entrySet();
@@ -144,5 +128,21 @@ public class JerseyExtenderImpl implements ServiceTrackerCustomizer<Object, Serv
 
         }
         return result;
+    }
+
+    @Override
+    public void modifiedService(final ServiceReference<Object> reference,
+            final ServiceRegistration<Servlet> serviceRegistration) {
+        JerseyServletServiceFactory jerseyServletServiceFactory = serviceFactoriesByReferences.get(reference);
+        jerseyServletServiceFactory.referesh();
+        Dictionary<String, Object> properties = JerseyExtenderImpl.createProperties(reference);
+        serviceRegistration.setProperties(properties);
+    }
+
+    @Override
+    public void removedService(final ServiceReference<Object> reference,
+            final ServiceRegistration<Servlet> serviceRegistration) {
+        serviceFactoriesByReferences.remove(reference);
+        serviceRegistration.unregister();
     }
 }

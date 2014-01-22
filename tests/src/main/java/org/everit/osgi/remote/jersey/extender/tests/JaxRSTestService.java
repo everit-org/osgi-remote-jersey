@@ -34,7 +34,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 @Path("testService1")
-public class TestJaxRSService {
+public class JaxRSTestService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)

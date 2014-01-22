@@ -28,6 +28,7 @@ import java.util.List;
 import javax.servlet.Servlet;
 
 import org.everit.osgi.remote.jersey.extender.JerseyExtenderConstants;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.osgi.framework.Bundle;
@@ -94,10 +95,6 @@ public class JerseyServletServiceFactory implements ServiceFactory<Servlet> {
         collection = JerseyServletServiceFactory.isCollection(reference);
     }
 
-    public boolean isCollection() {
-        return collection;
-    }
-
     /**
      * Creates a configuration for the Jersey servlet. The logic of adding components and properties is defined here.
      * 
@@ -125,13 +122,21 @@ public class JerseyServletServiceFactory implements ServiceFactory<Servlet> {
         String[] referenceProperties = reference.getPropertyKeys();
         for (String referenceProperty : referenceProperties) {
             if (referenceProperty.startsWith(JerseyExtenderConstants.SERVICE_PROP_JERSEY_PROP_PREFIX)) {
-                String jerseyProp = referenceProperty.substring(JerseyExtenderConstants.SERVICE_PROP_JERSEY_PROP_PREFIX.length());
+                String jerseyProp = referenceProperty.substring(JerseyExtenderConstants.SERVICE_PROP_JERSEY_PROP_PREFIX
+                        .length());
                 Object propValue = reference.getProperty(referenceProperty);
                 lResourceConfig.property(jerseyProp, propValue);
+            } else if (JerseyExtenderConstants.SERVICE_PROP_JACKSON_SUPPORT.equals(referenceProperty)
+                    && Boolean.valueOf(reference.getProperty(referenceProperty).toString())) {
+                lResourceConfig.register(JacksonFeature.class);
             }
         }
 
         return lResourceConfig;
+    }
+
+    public Long getFactoryServiceId() {
+        return factoryServiceId;
     }
 
     @Override
@@ -141,6 +146,10 @@ public class JerseyServletServiceFactory implements ServiceFactory<Servlet> {
         providedServlets.add(servletContainer);
 
         return servletContainer;
+    }
+
+    public boolean isCollection() {
+        return collection;
     }
 
     /**
@@ -156,19 +165,15 @@ public class JerseyServletServiceFactory implements ServiceFactory<Servlet> {
 
     }
 
+    void setFactoryServiceId(final Long factoryServiceId) {
+        this.factoryServiceId = factoryServiceId;
+    }
+
     @Override
     public synchronized void ungetService(final Bundle bundle, final ServiceRegistration<Servlet> registration,
             final Servlet service) {
 
         providedServlets.remove(service);
         extenderContext.ungetService(reference);
-    }
-
-    void setFactoryServiceId(Long factoryServiceId) {
-        this.factoryServiceId = factoryServiceId;
-    }
-
-    public Long getFactoryServiceId() {
-        return factoryServiceId;
     }
 }

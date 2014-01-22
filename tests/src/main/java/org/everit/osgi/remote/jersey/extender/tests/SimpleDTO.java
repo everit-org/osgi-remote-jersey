@@ -23,6 +23,9 @@ package org.everit.osgi.remote.jersey.extender.tests;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Simple DTO class for testing purposes.
+ */
 @XmlRootElement
 public class SimpleDTO {
 

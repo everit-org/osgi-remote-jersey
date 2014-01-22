@@ -48,6 +48,12 @@ public final class JerseyExtenderConstants {
      */
     public static final String SERVICE_PROP_JERSEY_PROP_PREFIX = "org.everit.osgi.remote.jersey.prop.";
 
+    /**
+     * In case a JAX-RS service is registered with this service property, the Jackson Feature will be automatically
+     * added to the Jersey ServletContainer. The value of the property must be true.
+     */
+    public static final String SERVICE_PROP_JACKSON_SUPPORT = "org.everit.osgi.remote.jackson";
+
     private JerseyExtenderConstants() {
     }
 }
