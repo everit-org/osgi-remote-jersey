@@ -1,27 +1,22 @@
+/**
+ * This file is part of Everit - Jersey Extender Tests.
+ *
+ * Everit - Jersey Extender Tests is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Everit - Jersey Extender Tests is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Everit - Jersey Extender Tests.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.everit.osgi.remote.jersey.extender.tests;
 
-/*
- * Copyright (c) 2011, Everit Kft.
- *
- * All rights reserved.
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301  USA
- */
-
-import java.io.IOException;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -36,7 +31,10 @@ import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
-import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.AuthenticationStore;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.util.BasicAuthentication;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
@@ -48,11 +46,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-
-import com.gargoylesoftware.htmlunit.DefaultCredentialsProvider;
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
-import com.gargoylesoftware.htmlunit.Page;
-import com.gargoylesoftware.htmlunit.WebClient;
 
 @Component(immediate = true, metatype = true)
 @Service(value = JerseyExtenderTestComponent.class)
@@ -142,17 +135,33 @@ public class JerseyExtenderTestComponent {
                 serviceProperties);
 
         try {
-            WebClient webClient = new WebClient();
-            webClient.setJavaScriptEnabled(false);
-            Page page = webClient.getPage("http://localhost:" + testPort
-                    + "/helloworldTmp/testService1/returnJSONFromDTO");
-            String contentAsString = page.getWebResponse().getContentAsString();
+            String contentAsString = callGet("http://localhost:" + testPort
+                    + "/helloworldTmp/testService1/returnJSONFromDTO").getContentAsString();
+
             Assert.assertEquals("{\"name\":\"John\",\"age\":1}", contentAsString);
-        } catch (IOException e) {
-            throw new AssertionError("Unexpected error during test", e);
         } finally {
             helloWorldTmpSR.unregister();
         }
+    }
+
+    private ContentResponse callGet(String url) {
+        ContentResponse result = null;
+        HttpClient httpClient = new HttpClient();
+        try {
+            httpClient.start();
+            ContentResponse contentResponse = httpClient.GET(url);
+            result = contentResponse;
+        } catch (Exception e) {
+            Assert.fail("Http GET '" + url + "' failed with exeption " + e.getClass().getName() + ": "
+                    + e.getMessage());
+        } finally {
+            try {
+                httpClient.stop();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return result;
     }
 
     /**
@@ -160,16 +169,9 @@ public class JerseyExtenderTestComponent {
      */
     @Test
     public void testJSON() {
-
-        try {
-            WebClient webClient = new WebClient();
-            webClient.setJavaScriptEnabled(false);
-            Page page = webClient.getPage("http://localhost:" + testPort + "/helloworld/testService1/returnJSON");
-            String contentAsString = page.getWebResponse().getContentAsString();
-            System.out.println("Return content" + contentAsString);
-        } catch (IOException e) {
-            throw new AssertionError("Unexpected error during test", e);
-        }
+        String contentAsString = callGet("http://localhost:" + testPort + "/helloworld/testService1/returnJSON")
+                .getContentAsString();
+        System.out.println("Return content" + contentAsString);
     }
 
     /**
@@ -186,14 +188,9 @@ public class JerseyExtenderTestComponent {
                 serviceProperties);
 
         try {
-            WebClient webClient = new WebClient();
-            webClient.setJavaScriptEnabled(false);
-            Page page = webClient.getPage("http://localhost:" + testPort
-                    + "/helloworldTmp/testService1/returnJSONFromDTO");
-            String contentAsString = page.getWebResponse().getContentAsString();
+            String contentAsString = callGet("http://localhost:" + testPort
+                    + "/helloworldTmp/testService1/returnJSONFromDTO").getContentAsString();
             Assert.assertEquals("{\"name\":\"John\",\"age\":1}", contentAsString);
-        } catch (IOException e) {
-            throw new AssertionError("Unexpected error during test", e);
         } finally {
             helloWorldTmpSR.unregister();
         }
@@ -215,24 +212,18 @@ public class JerseyExtenderTestComponent {
                 serviceProperties);
 
         try {
-            WebClient webClient = new WebClient();
-            webClient.setJavaScriptEnabled(false);
-            webClient.getPage("http://localhost:" + testPort + "/helloworldTmp/application.wadl");
+            callGet("http://localhost:" + testPort + "/helloworldTmp/application.wadl").getContentAsString();
 
             serviceProperties.put(JerseyExtenderConstants.SERVICE_PROP_JERSEY_PROP_PREFIX
                     + ServerProperties.WADL_FEATURE_DISABLE,
                     true);
             helloWorldTmpSR.setProperties(serviceProperties);
 
-            try {
-                webClient.getPage("http://localhost:" + testPort + "/helloworldTmp/application.wadl");
+            ContentResponse response = callGet("http://localhost:" + testPort + "/helloworldTmp/application.wadl");
+            if (response.getStatus() == 200) {
                 Assert.fail("WADL exists although the " + ServerProperties.WADL_FEATURE_DISABLE
                         + " property is set to true: ");
-            } catch (FailingHttpStatusCodeException e) {
-                Assert.assertEquals(HttpStatus.NOT_FOUND_404, e.getStatusCode());
             }
-        } catch (IOException e) {
-            throw new AssertionError("Unexpected error during test", e);
         } finally {
             helloWorldTmpSR.unregister();
         }
@@ -243,33 +234,37 @@ public class JerseyExtenderTestComponent {
      */
     @Test
     public void testSimple() {
-
-        try {
-            WebClient webClient = new WebClient();
-            webClient.setJavaScriptEnabled(false);
-            Page page = webClient.getPage("http://localhost:" + testPort + "/helloworld/testService1/hello?name=John");
-            String contentAsString = page.getWebResponse().getContentAsString();
-            Assert.assertEquals("Hello John!", contentAsString);
-        } catch (IOException e) {
-            throw new AssertionError("Unexpected error during test", e);
-        }
+        String contentAsString = callGet("http://localhost:" + testPort + "/helloworld/testService1/hello?name=John")
+                .getContentAsString();
+        Assert.assertEquals("Hello John!", contentAsString);
     }
 
     @Test
     public void testWebConsolePlugin() {
+
+        HttpClient httpClient = new HttpClient();
+
         try {
-            WebClient webClient = new WebClient();
-            DefaultCredentialsProvider credentialsProvider = new DefaultCredentialsProvider();
-            credentialsProvider.addCredentials("admin", "admin");
-            webClient.setCredentialsProvider(credentialsProvider);
-            webClient.setJavaScriptEnabled(false);
-            Page page = webClient
-                    .getPage("http://localhost:" + testPort + "/system/console/jerseyextender");
-            String contentAsString = page.getWebResponse().getContentAsString();
+            httpClient.start();
+            AuthenticationStore auth = httpClient.getAuthenticationStore();
+            URI uri = URI.create("http://localhost:" + testPort + "/system/console/jerseyextender");
+            auth.addAuthentication(new BasicAuthentication(uri, "OSGi Management Console", "admin", "admin"));
+            ContentResponse contentResponse = httpClient.GET(uri);
+
+            if (contentResponse.getStatus() != 200) {
+                Assert.fail(uri.toString() + " answered with status " + contentResponse.getStatus());
+            }
+            String contentAsString = contentResponse.getContentAsString();
             int indexOfTestService = contentAsString.indexOf(JaxRSTestService.class.getName());
             Assert.assertEquals(true, indexOfTestService > 0);
-        } catch (IOException e) {
-            throw new AssertionError("Unexpected error during test", e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                httpClient.stop();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

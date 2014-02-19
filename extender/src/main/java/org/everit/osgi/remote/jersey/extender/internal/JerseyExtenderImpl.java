@@ -1,25 +1,20 @@
-package org.everit.osgi.remote.jersey.extender.internal;
-
-/*
- * Copyright (c) 2011, Everit Kft.
+/**
+ * This file is part of Everit - Jersey Extender.
  *
- * All rights reserved.
+ * Everit - Jersey Extender is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
+ * Everit - Jersey Extender is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301  USA
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Everit - Jersey Extender.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.everit.osgi.remote.jersey.extender.internal;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -49,7 +44,7 @@ public class JerseyExtenderImpl implements ServiceTrackerCustomizer<Object, Serv
         JerseyExtender {
 
     private static Dictionary<String, Object> createProperties(final ServiceReference<Object> reference) {
-        Hashtable<String, Object> result = new Hashtable<>();
+        Hashtable<String, Object> result = new Hashtable<String, Object>();
         String[] propertyKeys = reference.getPropertyKeys();
         for (String propertyKey : propertyKeys) {
             if (org.osgi.framework.Constants.SERVICE_ID.equals(propertyKey)) {
@@ -76,7 +71,7 @@ public class JerseyExtenderImpl implements ServiceTrackerCustomizer<Object, Serv
      * The Map of registered Jersey service factories by the OSGi services that were embedded.
      */
     private Map<ServiceReference<Object>, JerseyServletServiceFactory> serviceFactoriesByReferences =
-            new ConcurrentHashMap<>();
+            new ConcurrentHashMap<ServiceReference<Object>, JerseyServletServiceFactory>();
 
     /**
      * Simple constructor.
@@ -112,7 +107,7 @@ public class JerseyExtenderImpl implements ServiceTrackerCustomizer<Object, Serv
     public List<TrackedService> getTrackedServices() {
         Set<Entry<ServiceReference<Object>, JerseyServletServiceFactory>> entrySet = serviceFactoriesByReferences
                 .entrySet();
-        List<TrackedService> result = new ArrayList<>();
+        List<TrackedService> result = new ArrayList<TrackedService>();
         for (Entry<ServiceReference<Object>, JerseyServletServiceFactory> entry : entrySet) {
             JerseyServletServiceFactory jerseyServletServiceFactory = entry.getValue();
             boolean collection = jerseyServletServiceFactory.isCollection();

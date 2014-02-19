@@ -1,24 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2011, Everit Kft.
+    This file is part of Everit - Jersey Extender.
 
-    All rights reserved.
+    Everit - Jersey Extender is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 3 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
+    Everit - Jersey Extender is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-    MA 02110-1301  USA
+    You should have received a copy of the GNU Lesser General Public License
+    along with Everit - Jersey Extender.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -27,21 +23,24 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.everit</groupId>
-    <artifactId>oss</artifactId>
-    <version>4</version>
+    <groupId>org.everit.config</groupId>
+    <artifactId>org.everit.config.oss</artifactId>
+    <version>5.0.0</version>
   </parent>
 
   <groupId>org.everit.osgi</groupId>
   <artifactId>org.everit.osgi.remote.jersey.extender</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
 
   <packaging>bundle</packaging>
-  <name>Everit OSGi Remote Services Jersey Extender</name>
+  <name>Everit - Jersey Extender</name>
   <description>An extender that picks up Remote REST based OSGi services and registers them based on the HTTP Whiteboard pattern.</description>
 
   <properties>
     <projectpath>osgi-remote-jersey</projectpath>
+    <maven.compiler.source>1.6</maven.compiler.source>
+    <maven.compiler.target>1.6</maven.compiler.target>
+    <jersey.version>2.6</jersey.version>
   </properties>
 
   <scm>
@@ -49,13 +48,9 @@
     <developerConnection>scm:git:https://github.com/everit-org/${projectpath}.git</developerConnection>
     <url>https://github.com/everit-org/${projectpath}</url>
   </scm>
-  <url>${everit.public.site.url}/mvnsites/${projectpath}</url>
-  <distributionManagement>
-    <site>
-      <id>everit.org</id>
-      <url>dav:${everit.public.site.url}/mvnsites/${projectpath}</url>
-    </site>
-  </distributionManagement>
+
+  <url>http://everit.org</url>
+
   <ciManagement>
     <system>Jenkins</system>
     <url>https://ci.everit.biz/jenkins/job/${projectpath}</url>
@@ -64,6 +59,25 @@
     <system>GitHub</system>
     <url>https://github.com/everit-org/${projectpath}/issues</url>
   </issueManagement>
+
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License v3.0</name>
+      <url>http://opensource.org/licenses/LGPL-3.0</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Everit Team</name>
+    </developer>
+  </developers>
+
+  <organization>
+    <name>Everit Kft.</name>
+    <url>http://www.everit.biz</url>
+  </organization>
 
   <build>
     <plugins>
@@ -100,8 +114,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.6</source>
+          <target>1.6</target>
         </configuration>
       </plugin>
     </plugins>
@@ -128,7 +142,7 @@
     <dependency>
       <groupId>org.glassfish.jersey.containers</groupId>
       <artifactId>jersey-container-servlet-core</artifactId>
-      <version>2.5.1</version>
+      <version>${jersey.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -139,23 +153,14 @@
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
       <artifactId>jersey-media-json-jackson</artifactId>
-      <version>2.5.1</version>
+      <version>${jersey.version}</version>
       <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.hk2.external</groupId>
+      <artifactId>asm-all-repackaged</artifactId>
+      <version>2.2.0</version>
     </dependency>
   </dependencies>
 
-
-  <repositories>
-    <repository>
-      <id>everit.groups.public</id>
-      <name>Everit Public Repository Group</name>
-      <url>http://repository.everit.biz/nexus/content/groups/public</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 </project>

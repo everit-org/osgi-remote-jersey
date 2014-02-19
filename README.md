@@ -79,9 +79,3 @@ created.
 
 Examples are avaialable in the Integration test project. The "tests" project
 is available in the source repository.
-
-
-## Maven repo?
-
-See pom.xml in the source repository or the pom file embedded in the 
-distributed jar.
