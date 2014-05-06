@@ -30,7 +30,7 @@
 
   <groupId>org.everit.osgi</groupId>
   <artifactId>org.everit.osgi.remote.jersey.extender</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
 
   <packaging>bundle</packaging>
   <name>Everit - Jersey Extender</name>
@@ -90,7 +90,7 @@
             <Bundle-Activator>${project.artifactId}.internal.Activator</Bundle-Activator>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Import-Package>
-              javax.servlet;version="[2.4,4)",
+              javax.servlet.*;version="[2.5,4)",
               *
             </Import-Package>
             <Export-Package>${project.artifactId}</Export-Package>
