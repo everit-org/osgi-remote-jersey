@@ -1,0 +1,229 @@
+<!DOCTYPE HTML>
+<!--
+
+    Copyright (C) 2011 Everit Kft. (http://www.everit.org)
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<html>
+
+<head>
+<meta charset="utf-8">
+<title>OSGi Remote Jersey</title>
+<link rel="icon" type="image/ico" href="http://www.everit.org/fonts/favicon.ico">
+
+<!--    <link rel="stylesheet" type="text/css" href="common/css/base.css">-->
+<link href="http://www.everit.org/css/bootstrap.min.css" rel="stylesheet">
+<link href="http://www.everit.org/css/docs.min.css" rel="stylesheet">
+<link href="http://www.everit.org/css/everit.css" rel="stylesheet">
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push([ '_setAccount', 'UA-15041869-4' ]);
+  _gaq.push([ '_setDomainName', 'everit.org' ]);
+  _gaq.push([ '_trackPageview' ]);
+</script>
+</head>
+
+<body class="bs-docs-home" data-spy="scroll" data-target="#affix-nav">
+  <a class="sr-only" href="#content">Skip to main content</a>
+  <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+    <div class="container">
+      <div class="navbar-header">
+        <button class="navbar-toggle" type="button" data-toggle="collapse"
+          data-target=".bs-navbar-collapse">
+          <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span
+            class="icon-bar"></span> <span class="icon-bar"></span>
+        </button>
+        <a href="#" class="navbar-brand">Index</a>
+      </div>
+      <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+        <ul class="nav navbar-nav">
+          <li><a href="https://github.com/everit-org/osgi-remote-jersey" target="_blank">Source</a></li>
+          <li><a href="http://www.everit.org/" target="_blank">Community</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="http://www.everit.biz" target="_blank">Enterprise</a></li>
+          <li><a href="http://everitorg.wordpress.com/" target="_blank">Blog</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="bs-docs-masthead everit-header" id="content" role="main">
+    <div class="container">
+      <span class="bs-docs-booticon bs-docs-booticon-lg bs-docs-booticon-outline"> <img
+        class="logo" src="http://www.everit.org/fonts/sbz_e.svg" alt="E">
+      </span>
+      <p class="lead">OSGi Remote Jersey</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="col-md-10">
+
+      <div class="bs-docs-featurette cookbook">
+        <h2 id="introduction" class="bs-docs-featurette-title">Introduction</h2>
+        <p>The Jersey extender picks up OSGi services and registers them as Jersey based JAX-RS
+          components.</p>
+      </div>
+      <hr class="featurette-divider">
+
+      <div class="bs-docs-featurette cookbook">
+        <h2 id="supported_service_properties" class="bs-docs-featurette-title">Supported
+          service properties</h2>
+        <p>Currently the extender supports two service properties:</p>
+        <p>
+          <i>org.everit.osgi.remote.jersey.component</i>: When this property has the value true, the
+          OSGi service will be picked up by the extender and registered as a Jersey component.
+        </p>
+        <p>
+          <i>org.everit.osgi.remote.jackson</i>: When this property is set to true, the extender
+          registers the Jackson feature to the Jersey Servlet.
+        </p>
+      </div>
+      <hr class="featurette-divider">
+
+      <div class="bs-docs-featurette cookbook">
+        <h2 id="registering_more_than_one_component_to_a_servlet" class="bs-docs-featurette-title">Registering
+          more than one component to a servlet</h2>
+        <p>In case a registered OSGi service has the type java.util.Collection, each member of
+          the collection will be handled as a Jersey component. If the collection contains four
+          objects, the newly created Jersey servlet will contain four components.</p>
+      </div>
+      <hr class="featurette-divider">
+
+      <div class="bs-docs-featurette cookbook">
+        <h2 id="what_is_a_component" class="bs-docs-featurette-title">What is a component?</h2>
+        <p>A component can be</p>
+        <ul>
+          <li>a class / object with JAX-RS annotations</li>
+          <li>a class / object that implements an interface that has JAX-RS annotations</li>
+          <li>a class / object that implements <i>javax.ws.rs.core.Feature</i></li>
+          <li>any class / object that can be registered in the <i>ResourceConfig</i> of Jersey
+          </li>
+        </ul>
+        <p>In case a special feature is to be used during the processing of registered
+          components, the user should register a Collection that holds the original components and
+          the type of the Feature(s) as well.</p>
+      </div>
+      <hr class="featurette-divider">
+
+      <div class="bs-docs-featurette cookbook">
+        <h2 id="how_can_i_configure_jersey" class="bs-docs-featurette-title">How can I
+          configure Jersey?</h2>
+        <p>
+          All service properties beginning with <i>org.everit.osgi.remote.jersey.prop</i>. will be
+          passed to the ResourceConfig of Jersey.
+        </p>
+        <p>E.g.:</p>
+        <p>
+          If a service property with the following key is defined: <i>org.everit.osgi.remote.jersey.prop.jersey.config.server.wadl.disableWadl</i>
+        </p>
+        <p>
+          This will pass the <i>jersey.config.server.wadl.disableWadl</i> property to Jersey with
+          the value that the service property had.
+        </p>
+      </div>
+      <hr class="featurette-divider">
+
+      <div class="bs-docs-featurette cookbook">
+        <h2 id="how_will_the_jersey_servlet_be_registered_to_a_servlet_container"
+          class="bs-docs-featurette-title">How will the Jersey servlet be registered to a
+          Servlet container</h2>
+        <p>The extender itself simply creates a Servlet OSGi service that contains the Jersey
+          components. It is the user`s task to register the newly created OSGi service to any of the
+          containers.</p>
+        <p>However, the newly created service will contain all service properties that the
+          original OSGi service had. The user has the possibility to define properties in the
+          original OSGi service that makes the Servlet registered. The easiest way is to use the
+          felix-whiteboard module or if there is an implementation, use the OSGi HTTP Whiteboard
+          Service properties.</p>
+      </div>
+      <hr class="featurette-divider">
+
+      <div class="bs-docs-featurette cookbook">
+        <h2 id="is_it_possible_to_get_information_about_the_tracked_services"
+          class="bs-docs-featurette-title">Is it possible to get information about the tracked
+          services?</h2>
+        <p>The extender has a webconsole plugin. On the webconsole, there should be a "Jersey
+          Extender" menu item. Within the page, there is a table that shows the services that were
+          picked up and also the Servlet services that were created.</p>
+      </div>
+      <hr class="featurette-divider">
+
+      <div class="bs-docs-featurette cookbook">
+        <h2 id="where_are_the_examples" class="bs-docs-featurette-title">Where are the
+          examples?</h2>
+        <p>Examples are avaialable in the Integration test project. The "tests" project is
+          available in the source repository.</p>
+      </div>
+      <hr class="featurette-divider">
+    </div>
+
+    <!--        Affix-->
+    <div class="col-md-2 col-sm-0 col-xs-0">
+      <nav id="affix-nav">
+        <ul class="nav nav-pills nav-stacked everit-affix" data-spy="affix" data-offset-top="350"
+          data-offset-bottom="140">
+          <li class="active"><a href="#introduction">Introduction</a></li>
+          <li><a href="#supported_service_properties">Supported service properties</a></li>
+          <li><a href="#registering_more_than_one_component_to_a_servlet">Registering more
+              than one component to a servlet</a></li>
+          <li><a href="#what_is_a_component">What is a component?</a></li>
+          <li><a href="#how_can_i_configure_jersey">How can I configure Jersey?</a></li>
+          <li><a href="#how_will_the_jersey_servlet_be_registered_to_a_servlet_container">How
+              will the Jersey servlet be registered to a Servlet container</a></li>
+          <li><a href="#is_it_possible_to_get_information_about_the_tracked_services">Is it
+              possible to get information about the tracked services?</a></li>
+          <li><a href="#where_are_the_examples">Where are the examples?</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  <div></div>
+  <footer class="bs-docs-footer" role="contentinfo">
+    <div class="container">
+      <div class="bs-docs-social">
+        <ul class="bs-docs-social-buttons">
+          <li class="follow-btn "><a href="https://twitter.com/EveritOrg"
+            class="twitter-follow-button" data-show-count="true">Follow @EveritOrg</a></li>
+          <li class="tweet-btn"><a href="https://twitter.com/share"
+            class="twitter-share-button" data-url="http://www.everit.org/">Tweet</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap core JavaScript
+================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="http://www.everit.org/js/jquery-2.1.1.min.js"></script>
+  <script src="http://www.everit.org/js/bootstrap.min.js"></script>
+  <script src="http://www.everit.org/js/everit.js "></script>
+  <script type="text/javascript">
+      (function() {
+        var ga = document.createElement('script');
+        ga.type = 'text/javascript';
+        ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl'
+            : 'http://www')
+            + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  <script src="http://www.everit.org/js/prettify/run_prettify.js"></script>
+</body>
+
+</html>
